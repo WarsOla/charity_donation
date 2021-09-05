@@ -6,22 +6,32 @@
     <section class="login-page">
       <h2>Załóż konto</h2>
       <form method="POST" action="">
+        {% csrf_token %}
         <div class="form-group">
-          <input type="text" name="name" placeholder="Imię" />
+          <label for="first_name"></label>
+          <input type="text" name="first_name" placeholder="Imię" id="first_name"/>
         </div>
          <div class="form-group">
-          <input type="text" name="surname" placeholder="Nazwisko" />
+          <label for="last_name"></label>
+          <input type="text" name="last_name" placeholder="Nazwisko" id="last_name"/>
         </div>
         <div class="form-group">
-          <input type="email" name="email" placeholder="Email" />
+          <label for="email"></label>
+          <input type="email" name="email" placeholder="Email" id="email"/>
         </div>
         <div class="form-group">
-          <input type="password" name="password" placeholder="Hasło" />
+          <label for="password1"></label>
+          <input type="password" name="password1" placeholder="Hasło" id="password1"/>
         </div>
         <div class="form-group">
-          <input type="password" name="password2" placeholder="Powtórz hasło" />
+          <label for="password2"></label>
+          <input type="password" name="password2" placeholder="Powtórz hasło" id="password2"/>
         </div>
-
+        {% for field in form %}
+            {% for error in field.errors %}
+              <p style="color: red">{{ error }}</p>
+            {% endfor %}
+        {% endfor %}
         <div class="form-group form-group--buttons">
           <a href="{% url 'login' %}" class="btn btn--without-border">Zaloguj się</a>
           <button class="btn" type="submit">Załóż konto</button>
