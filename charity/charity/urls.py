@@ -23,8 +23,9 @@ from donations import views as ex_views, views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', ex_views.LandingPage.as_view(), name='main'),
-    path('adddonation/', ex_views.AddDonation.as_view(), name='donation'),
+    path('adddonation/', ex_views.DonationFormView.as_view(), name='donation'),
     path('login/', ex_views.LoginView.as_view(), name='login'),
+    path('logout/', ex_views.LogoutView.as_view(), name='logout'),
     path('register/', ex_views.RegistrationView.as_view(), name='register')
 
 ]
