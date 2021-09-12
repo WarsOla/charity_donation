@@ -17,8 +17,11 @@
               <li class="logged-user">
                 Witaj {{ user.first_name }} {{ user.last_name }}
                 <ul class="dropdown">
-                  <li><a href="#">Profil</a></li>
+                  <li><a href="{% url 'user-profile' %}">Profil</a></li>
                   <li><a href="#">Ustawienia</a></li>
+                    {% if user.is_superuser %}
+                        <li><a href="/admin/">Panel administracyjny</a></li>
+                    {% endif %}
                   <li><a href="{% url 'logout' %}">Wyloguj</a></li>
                 </ul>
               </li>
@@ -55,13 +58,13 @@
     <section id="stats" class="stats">
       <div class="container container--85">
         <div class="stats--item">
-          <em>{{ bags_counter }}</em>
+          <em>{{ total_bags }}</em>
           <h3>Oddanych worków</h3>
           <p>Jesteście wspaniali, zobaczcie ile darów przekazaliśmy potrzebującym!</p>
         </div>
 
         <div class="stats--item">
-          <em>{{ organisation_counter }}</em>
+          <em>{{ supported_organisations }}</em>
           <h3>Wspartych organizacji</h3>
           <p>Mamy nadzieję, że coraz więcej organizacji będzie z nami współpracować. Dziękujemy za okazaną pomoc!</p>
         </div>

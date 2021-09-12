@@ -5,7 +5,8 @@ from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.views import View
 
 from donations.models import Institution, Donation, Category
-from users.forms import RegistrationForm
+from users.forms import RegistrationForm, DonationForm
+from users.models import CustomUser
 
 User = get_user_model()
 
@@ -15,10 +16,15 @@ class LandingPage(View):
         foundations = Institution.objects.filter(type=1)
         organisations = Institution.objects.filter(type=2)
         locals = Institution.objects.filter(type=3)
-        bags_counter = Donation.objects.all().count()
-        organisation_counter = Institution.objects.all().count()
+
+        donations = Donation.objects.filter(quantity__isnull=False)
+        supported_organisations = Institution.objects.values('donation__institution_id').distinct().count() - 1
+
+        total_bags = int(sum([int(donation.quantity) for donation in donations]) / 2)
+
         ctx = {'foundations': foundations, 'organisations': organisations, 'locals': locals,
-               'bags_counter': bags_counter, 'organisation_counter': organisation_counter}
+               'total_bags': total_bags, 'supported_organisations': supported_organisations}
+
         return render(request, 'index.html', ctx)
 
 
@@ -33,14 +39,6 @@ class RegistrationView(View):
             user = form.save()
             user.save()
             email = form.cleaned_data['email']
-            # email = request.POST.get('email')
-            # first_name = request.POST.get('first_name')
-            # last_name = request.POST.get('last_name')
-            # password = request.POST.get('password')
-            # password2 = request.POST.get('password2')
-
-            # if password == password2:
-            #     CustomUser.objects.create_user(first_name=first_name, last_name=last_name, email=email, password=password)
             messages.success(request, "Konto zostało założone dla użytkownika " + email)
             return redirect('login')
         else:
@@ -61,20 +59,59 @@ class LoginView(View):
         else:
             return render(request, 'wolontariat/register.html')
 
+
 class LogoutView(View):
     def get(self, request, *args, **kwargs):
         logout(request)
         return redirect('main')
 
+
 class DonationFormView(View):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             categories = Category.objects.all()
-            ctx = {'categories': categories}
+            institutions = Institution.objects.all()
+            ctx = {'categories': categories, 'institutions': institutions}
             return render(request, 'wolontariat/form.html', ctx)
         else:
             return redirect('login')
 
     def post(self, request, *args, **kwargs):
-        pass
+        quantity = request.POST.get('quantity')
+        categories = request.POST.get('category')
+        institution = request.POST.get('institution')
+        address = request.POST.get('address')
+        phone_number = request.POST.get('phone_number')
+        city = request.POST.get('city')
+        zip_code = request.POST.get('zip_code')
+        pick_up_date = request.POST.get('pick_up_date')
+        # pick_up_time = request.POST.get('pick_up_time')
+        pick_up_comment = request.POST.get('pick_up_comment')
+        user_id = request.user.id
 
+        institution_to_add = Institution.objects.get(name=institution).id
+        categories_to_add = Category.objects.get(name=categories)
+
+        donation = Donation.objects.create(quantity=quantity, institution_id=institution_to_add, address=address,
+                                           phone_number=phone_number, city=city,
+                                           zip_code=zip_code, pick_up_date=pick_up_date,
+                                           pick_up_comment=pick_up_comment, user_id=user_id)
+
+        donation.categories.add(categories_to_add)
+        donation.save()
+
+        return render(request, 'wolontariat/form-confirmation.html')
+
+
+class UserProfileView(View):
+    def get(self, request, *args, **kwargs):
+        user_id = request.user.id
+        donations = Donation.objects.filter(user_id=user_id)
+
+        ctx = {'donations': donations}
+        return render(request, 'wolontariat/user_profile.html', ctx)
+
+
+class FormConfirmationView(View):
+    def post(self, request, *args, **kwargs):
+        return render(request, 'wolontariat/form-confirmation.html')

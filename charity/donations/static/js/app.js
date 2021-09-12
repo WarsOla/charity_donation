@@ -235,21 +235,70 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$step.parentElement.hidden = this.currentStep >= 6;
 
       // TODO: get data from inputs and show them in summary
+
+        let myForm = document.getElementById('myForm');
+        let formData = new FormData(myForm);
+
+        let quantity = formData.get('quantity')
+        let category = formData.get('category')
+        let summaryQuantity = document.getElementById('summary-quantity-and-item')
+        summaryQuantity.innerText = `${quantity} worków "${category}"`
+
+        let institution = formData.get('institution')
+        let summaryInstitution = document.getElementById('summary-institution')
+        summaryInstitution.innerText = `Dla fundacji "${institution}"`
+
+        let street = formData.get('address')
+        let zipCode = formData.get('zip_code')
+        let city = formData.get('city')
+        let phoneNumber = formData.get('phone_number')
+        let summaryAddress = document.querySelectorAll('#summary-address li')
+        summaryAddress[0].innerText = street
+        summaryAddress[1].innerText = city
+        summaryAddress[2].innerText = zipCode
+        summaryAddress[3].innerText = phoneNumber
+
+
+        let date = formData.get('pick_up_date')
+        // let time = formData.get('pick_up_time')
+        let comment = formData.get('pick_up_comment')
+        let summaryDeadline = document.querySelectorAll('#summary-deadline li')
+        summaryDeadline[0].innerText = date
+        // summaryDeadline[1].innerText = time
+        summaryDeadline[2].innerText = comment
+
     }
 
-    /**
-     * Submit form
-     *
-     * TODO: validation, send data to server
-     */
+  postData() {
+        let myForm = document.getElementById('myForm');
+        let formData = new FormData(myForm);
+
+        fetch(urlForm,{
+          method: 'post',
+          body: formData
+        })
+        // .then(response => response.json())
+          .then(response => {
+          console.log('Success:', response);
+      })
+    }
+
+     // * TODO: validation, send data to server
+     // */
+
     submit(e) {
       e.preventDefault();
-      this.currentStep++;
-      this.updateForm();
+      // this.currentStep++;
+      // this.updateForm();
+      this.postData();
+
     }
+
+
   }
   const form = document.querySelector(".form--steps");
   if (form !== null) {
     new FormSteps(form);
   }
+
 });

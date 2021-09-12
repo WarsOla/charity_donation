@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div>
+      <h2>Dane użytkownika</h2>
+            <h1>Imię: {{ user.first_name }}</h1>
+            <h1>Nazwisko: {{ user.last_name }}</h1>
+            <h1>Email: {{ user.email }}</h1>
+      <ul>
+      {% for donation in donations %}
+
+            <li>Ilość worków z oddanymi rzeczami: {{ donation.quantity }}</li>
+            <li>Instytucja: {{ donation.institution.name }}</li>
+            <li>Kategorie oddanych produktów: {% for categories in donation.categories.all %} {{ categories.name }}, {% endfor %}</li>
+            <li>Data odbioru: {{ donation.pick_up_date }}</li>
+      {% endfor %}
+      </ul>
+</div>
+
+{% endblock %}

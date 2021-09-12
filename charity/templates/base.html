@@ -19,8 +19,11 @@
               <li class="logged-user">
                 Witaj {{ user.first_name }} {{ user.last_name }}
                 <ul class="dropdown">
-                  <li><a href="#">Profil</a></li>
+                  <li><a href="{% url 'user-profile' %}">Profil</a></li>
                   <li><a href="#">Ustawienia</a></li>
+                    {% if user.is_superuser %}
+                        <li><a href="/admin/">Panel administracyjny</a></li>
+                    {% endif %}
                   <li><a href="{% url 'logout' %}">Wyloguj</a></li>
                 </ul>
               </li>
@@ -76,6 +79,8 @@
             <a href="#" class="btn btn--small"><img src="{% static 'images/icon-instagram.svg' %}"/></a>
           </div>
         </div>
+            <script> let urlForm = "{% url 'donation' %}"</script>
+            <script src="{% static 'js/app.js' %}"></script>
       </footer>
 {% endblock %}
 

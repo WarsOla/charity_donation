@@ -18,15 +18,17 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
-from donations import views as ex_views, views
+from donations import views as ex_views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls, name='admin'),
     path('', ex_views.LandingPage.as_view(), name='main'),
     path('adddonation/', ex_views.DonationFormView.as_view(), name='donation'),
     path('login/', ex_views.LoginView.as_view(), name='login'),
     path('logout/', ex_views.LogoutView.as_view(), name='logout'),
-    path('register/', ex_views.RegistrationView.as_view(), name='register')
+    path('register/', ex_views.RegistrationView.as_view(), name='register'),
+    path('profile/', ex_views.UserProfileView.as_view(), name='user-profile'),
+    path('adddonation/form-confirmation.html', ex_views.FormConfirmationView.as_view(), name='confirmation'),
 
 ]
 
